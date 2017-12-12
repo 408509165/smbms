@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+	">
+
+
+	<!-- <bean class="com.bdqb.control.UserControl" name="/servlet/UserServlet"></bean> -->
+	<!-- <bean class="com.bdqb.control.RoleControl" name="/roleControl"></bean> -->
+	<!-- 扫描注解类 -->
+	<context:component-scan base-package="cn.smbms.control"></context:component-scan>
+	<mvc:annotation-driven />
+	<!-- 处理css js image文件 -->
+	<mvc:resources location="/statics/" mapping="/statics/**"></mvc:resources>
+
+	<!-- user->WebRoot/WEB-INF/jsp/user.jsp 视图解析器：将逻辑视图解析成具体的页面 -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/jsp/"></property> <!-- 前缀 -->
+		<property name="suffix" value=".jsp"></property>		  <!-- 后缀 -->
+	</bean>
+
+	<mvc:annotation-driven>
+		<!-- 用于ajax 返回值的处理 -->
+		<mvc:message-converters>
+			<!-- 一：返回值是text -->
+			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+				<property name="supportedMediaTypes">
+					<value>text/html;charset=utf-8</value>
+				</property>
+			</bean>
+			<!-- 二：返回值是json -->
+			<bean
+				class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+				<property name="supportedMediaTypes">
+					<list>
+						<value>text/html;charset=utf-8</value> <!-- 处理数组 -->
+						<value>application/json;charset=utf-8</value> <!-- 处理 对象和 对象数组 -->
+					</list>
+				</property>
+			</bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+
+	<!-- 通用附件视图解析器 -->
+	<!-- id值 固定为 multipartResolver -->
+	<bean
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver"
+		id="multipartResolver">
+		<!-- 附件表单中中文的字符集 -->
+		<property name="defaultEncoding" value="utf-8"></property>
+		<!-- 附件表单中 附件的最大值 (Byte) -->
+		<property name="maxUploadSize" value="5000000"></property>
+		
+	</bean>
+
+
+</beans>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smbms.dao.provider.ProviderMapper">
+
+	<select id="getProviderList" resultType="Provider">
+		SELECT *FROM `smbms_provider`
+		<where>
+			<if test="proCode!=null">
+				AND proCode LIKE '%${proCode}%'
+			</if>
+			<if test="proName !=null">
+				AND proName LIKE '%${proName}%'
+			</if>
+		</where>
+		<if test="pageSize != 0 ">
+		LIMIT #{limit},#{pageSize}
+		</if>
+	</select>
+
+	<select id="getProviderIdAndProName" resultType="Provider">
+		SELECT
+		id,proName FROM `smbms_provider`
+	</select>
+
+	<insert id="addProvider" parameterType="Provider">
+		INSERT INTO
+		`smbms_provider`
+		(`proCode`,`proName`,`proDesc`,`proContact`,`proPhone`,`proAddress`,`proFax`,`createdBy`,`creationDate`)
+		VALUES
+		( #{proCode}, #{proName}, #{proDesc}, #{proContact}, #{proPhone},
+		#{proAddress}, #{proFax}, #{createBy}, NOW());
+	</insert>
+
+	<delete id="deleteProviderById" parameterType="int">
+		DELETE FROM
+		`smbms_provider` WHERE id=#{id}
+	</delete>
+
+	<select id="getProviderById" resultType="Provider">
+		SELECT `id`,
+		`proCode`,`proName`,`proContact`,`proPhone`,`proAddress`,`proFax`,`proDesc`
+		FROM `smbms_provider`
+		WHERE id=#{id}
+	</select>
+
+	<update id="updateProviderById" parameterType="Provider">
+		UPDATE
+		`smbms_provider` SET
+		`proCode`=#{proCode},`proName`=#{proName},`proContact`=#{proContact},
+		`proPhone`=#{proPhone},`proAddress`=#{proAddress},`proFax`=#{proFax},`modifyDate`=NOW(),
+		`modifyBy`=#{modifyBy}
+		WHERE id=1
+	</update>
+</mapper>

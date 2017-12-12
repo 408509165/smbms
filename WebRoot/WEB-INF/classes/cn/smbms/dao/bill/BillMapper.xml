@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smbms.dao.bill.BillMapper">
+	<!-- resultMap 手动配置查询的结果集的列 与 实体的属性 的映射关系（多用于多表连接查询） -->
+	<resultMap type="cn.smbms.pojo.Bill" id="map">
+		<id column="id" property="id"/>
+		<result column="billcode" property="billCode"/>
+		<result column="productName" property="productName"/>
+		<result column="totalPrice" property="totalPrice"/>
+		<result column="isPayment" property="isPayment"/>
+		<result column="creationDate" property="creationDate"/>
+		<!-- 对象类型 一对多或者多对一 -->
+		<!-- ************配置对象类型第一种方式*************-->
+			<!-- <association property="provider" javaType="cn.smbms.pojo.Provider"> 指定类型
+				<id column="pid" property="id"/>
+				<result column="proName" property="proName"/>
+			</association> -->
+		<!-- ************配置对象类型第二种方式*************-->
+			<association property="provider" resultMap="proMap"></association> <!-- 引用proMap -->
+			
+	</resultMap>
+	
+	<resultMap type="cn.smbms.pojo.Provider" id="proMap">
+		<id column="pid" property="id"/>
+		<result column="proName" property="proName"/>
+	</resultMap>
+	
+	<select id="getBillList" resultMap="map">
+		
+		SELECT a.id,a.billcode,a.`productName`,a.`totalPrice`,a.`isPayment`,a.`creationDate`,b.id AS "pid",b.proName
+		FROM `smbms_bill` AS a
+		INNER JOIN `smbms_provider` AS b ON a.`providerId`=b.`id`
+		<where>
+			<if test="proName != null and proName != ''">AND a.`productName` LIKE '%${proName}%'</if>
+			<if test="proId != 0">AND a.`providerId` = #{proId}</if>
+			<if test="isPay != 0">AND a.`isPayment` =#{isPay}</if>
+		</where>
+		<if test="pageSize != 0 ">
+		LIMIT #{limit},#{pageSize}
+		</if>
+		
+	</select>
+	<select id="getBillList1" resultMap="map">
+		SELECT a.id,a.billcode,a.`productName`,a.`totalPrice`,a.`isPayment`,a.`creationDate`,b.id AS "pid",b.proName
+		FROM `smbms_bill` AS a
+		INNER JOIN `smbms_provider` AS b ON a.`providerId`=b.`id`
+		<if test="pageSize != 0 ">
+		
+		</if>
+		
+	</select>
+	
+	
+	<update id="updateBillById" parameterType="Bill">
+		UPDATE `smbms_bill` 
+		SET `billCode`=#{billCode},`productName`=#{productName},`productUnit`=#{productUnit},
+		`productCount`=#{productCount},`totalPrice`=#{totalPrice},`providerId`=#{providerId}
+		WHERE id=#{id}
+	</update>
+	
+	<insert id="addBill" parameterType="Bill">
+		INSERT INTO `smbms_bill` 
+		(`billCode`,`productName`,`productUnit`,`productCount`,totalPrice,`isPayment`,`createdBy`,`creationDate`,`providerId`)
+		VALUES
+		(#{billCode},#{productName},#{productUnit},#{productCount},#{totalPrice},#{isPayment},#{createBy},NOW(),#{providerId})
+	</insert>
+	
+	<delete id="deleteBillById" >
+		DELETE FROM `smbms_bill` WHERE id=#{id}
+	</delete>
+	
+	<select id="getBillById" resultType="Bill">
+		SELECT *FROM `smbms_bill` WHERE id=#{id}
+	</select>
+	
+
+</mapper>

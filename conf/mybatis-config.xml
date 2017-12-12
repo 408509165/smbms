@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<!-- 通过这个配置文件完成mybatis与数据库的连接 -->
+<configuration>
+	<!-- 引入 database.properties 文件-->
+	<properties resource="database.properties"/>
+	<!-- 配置mybatis的log实现为LOG4J -->
+	<settings>
+		<setting name="logImpl" value="LOG4J" />
+		<!--二级缓存第一步： 开启二级缓存 -->
+		<setting name="cacheEnabled" value="true"/>
+	</settings>
+	<!-- 配置别名 -->
+			 <typeAliases>
+				<!-- 第一种：为单个实体类 -->
+				<!-- <typeAlias type="cn.smbms.pojo.User" alias="User"/>
+				<typeAlias type="cn.smbms.pojo.Role" alias="Role"/>
+				<typeAlias type="cn.smbms.pojo.Provider" alias="Provider"/> -->
+				<!-- 第二种：配置包下的实体类，别名为类名 -->
+				<package name="cn.smbms.pojo"/>
+			</typeAliases>
+	<environments default="development">
+		<environment id="development">
+			<!--配置事务管理，采用JDBC的事务管理  -->
+			<transactionManager type="JDBC"></transactionManager>
+			<!-- POOLED:mybatis自带的数据源，JNDI:基于tomcat的数据源 -->
+			<dataSource type="POOLED">
+				<property name="driver" value="${driver}"/>
+				<property name="url" value="${url}"/>
+				<property name="username" value="${user}"/>
+				<property name="password" value="${password}"/>
+			</dataSource>
+		</environment>
+	</environments>
+	<mappers >
+		<mapper resource="cn/smbms/dao/user/UserMapper.xml"/>
+		<mapper resource="cn/smbms/dao/role/RoleMapper.xml"/>
+		<mapper resource="cn/smbms/dao/bill/BillMapper.xml"/>
+		<mapper resource="cn/smbms/dao/provider/ProviderMapper.xml"/>
+	</mappers>
+</configuration>
