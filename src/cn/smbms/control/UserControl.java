@@ -32,7 +32,17 @@ import cn.smbms.util.Page;
 @RequestMapping("/user")
 @SessionAttributes({"loginUserId","loginUserName"})
 public class UserControl {
-	private UserService userService=UserService.getUserService();
+	private UserService userService;
+
+	public UserService getUserService() {
+		return userService;
+	}
+
+	@Resource(name="userService")
+	public void setUserService(UserService userService) {
+		this.userService = userService;
+	}
+
 
 	@RequestMapping(value="/login.html",method=RequestMethod.POST)
 	public String login(Model model,String userCode,String userPassword){

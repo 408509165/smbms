@@ -7,22 +7,46 @@
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
 	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
 	">
-
-
 	<!-- <bean class="com.bdqb.control.UserControl" name="/servlet/UserServlet"></bean> -->
 	<!-- <bean class="com.bdqb.control.RoleControl" name="/roleControl"></bean> -->
 	<!-- 扫描注解类 -->
 	<context:component-scan base-package="cn.smbms.control"></context:component-scan>
+	
+	
 	<mvc:annotation-driven />
 	<!-- 处理css js image文件 -->
 	<mvc:resources location="/statics/" mapping="/statics/**"></mvc:resources>
 
-	<!-- user->WebRoot/WEB-INF/jsp/user.jsp 视图解析器：将逻辑视图解析成具体的页面 -->
+
+	<!-- 多视图解析器  -->
 	<bean
-		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<property name="prefix" value="/WEB-INF/jsp/"></property> <!-- 前缀 -->
-		<property name="suffix" value=".jsp"></property>		  <!-- 后缀 -->
+		class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+		<property name="favorParameter" value="true"></property> <!-- 请求链接地址是否支持带参数  ? &  -->
+		<property name="mediaTypes"> <!-- 请求的后缀，如.json .xml .html  -->
+			<map>
+					<!-- 4 http://localhost:9999/ch102/user/getuser/1  -->
+					<!-- 1 http://localhost:9999/ch102/user/getuser.html?id=1  -->
+				<entry key="html" value="text/html;charset=utf-8" />
+					<!-- 2 http://localhost:9999/ch102/user/getuser.json?id=1  -->
+				<entry key="json" value="application/json;charset=utf-8" />
+					<!-- 3 http://localhost:9999/ch102/user/getuser.xml?id=1  -->
+				<entry key="xml" value="application/xml;charset=utf-8" />
+			</map>
+		</property>
+		<property name="defaultContentType" value="text/html;charset=utf-8"></property> <!-- 默认处理方法  -->
+		
+		<property name="viewResolvers">
+			<list>
+				<!-- user->WebRoot/WEB-INF/jsp/user.jsp 视图解析器：将逻辑视图解析成具体的页面 -->
+				<bean
+					class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+					<property name="prefix" value="/WEB-INF/jsp/"></property> <!-- 前缀 -->
+					<property name="suffix" value=".jsp"></property>		  <!-- 后缀 -->
+				</bean>
+			</list>
+		</property>
 	</bean>
+
 
 	<mvc:annotation-driven>
 		<!-- 用于ajax 返回值的处理 -->
@@ -55,8 +79,19 @@
 		<property name="defaultEncoding" value="utf-8"></property>
 		<!-- 附件表单中 附件的最大值 (Byte) -->
 		<property name="maxUploadSize" value="5000000"></property>
-		
-	</bean>
 
+	</bean>
+	
+	<!-- 全局异常处理 -->
+	
+	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<property name="exceptionMappings">
+			<props>
+				<!-- 需要被处理的异常 -->
+				<prop key="java.lang.RuntimeException">error</prop>
+			</props>
+		</property>
+	</bean>
+	
 
 </beans>

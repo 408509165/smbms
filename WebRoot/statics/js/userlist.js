@@ -1,7 +1,7 @@
 //初始化函数，页面加载完成后 调用函数
 $(function(){
 	$.ajax({
-		url:path+"/role/getrole.html",
+		url:path+"/role/view.json",
 		type:"get",
 		dataType:"json",
 		success:function(list){

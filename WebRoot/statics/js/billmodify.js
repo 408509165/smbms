@@ -2,7 +2,7 @@
 $(function(){
 	//下拉选项
 	$.ajax({
-		url:path+"/provider/getProNameAndProId.html",
+		url:path+"/provider/pview.json",
 		type:"post",
 		dataType:"json",
 		success:function(list) { //list:字符串格式的对象集合

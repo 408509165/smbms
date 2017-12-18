@@ -7,7 +7,16 @@
 	<welcome-file-list>
 		<welcome-file>/WEB-INF/jsp/login.jsp</welcome-file>
 	</welcome-file-list>
-
+	<!-- 单独加载spring配置文件 -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:applicationContext.xml</param-value>
+	</context-param>
+	<!-- 配置spring 监听器 用于spring容器之间的访问 -->
+	
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
 	<servlet>
 		<servlet-name>springmvc</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -24,7 +33,7 @@
 	<filter>
 		<filter-name>CharacterEncodingFilter</filter-name>
 		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
-		<!-- 设置具体 的目标字符集  GBK GB2312 UTF-8 -->
+		<!-- 设置具体 的目标字符集 GBK GB2312 UTF-8 -->
 		<init-param>
 			<param-name>encoding</param-name>
 			<param-value>utf-8</param-value>

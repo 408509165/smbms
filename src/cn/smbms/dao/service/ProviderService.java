@@ -2,40 +2,39 @@ package cn.smbms.dao.service;
 
 import java.util.List;
 
-import org.apache.ibatis.session.SqlSession;
+import javax.annotation.Resource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 
 import cn.smbms.dao.provider.ProviderMapper;
 import cn.smbms.pojo.Provider;
-import cn.smbms.util.MybatisUtil;
 import cn.smbms.util.Page;
 
+@Service
 public class ProviderService {
-	private static ProviderService service=null;
-	public synchronized static ProviderService getProviderService(){
-		if(null==service){
-			service=new ProviderService();
-		}
-		return service;
-	}
+	private ProviderMapper mapper;
 	
+	
+	public ProviderMapper getMapper() {
+		return mapper;
+	}
+	@Resource(name="providerMapper")
+	public void setMapper(ProviderMapper mapper) {
+		this.mapper = mapper;
+	}
+
 	public List<Provider> getProviderList(String proCode,String proName,Page page){
 		List<Provider> list=null;
-		SqlSession sqlSession=MybatisUtil.currentSession();
-		ProviderMapper mapper=sqlSession.getMapper(ProviderMapper.class);
 		list=mapper.getProviderList(proCode,proName,page.getPageSize(),page.getLimit());
-		sqlSession.close();
 		return list;
 	}
 	
 	public JSONArray getProviderIdAndProName(){
 		JSONArray jArray=new JSONArray();
 		Provider pro=null;
-		
-		SqlSession sqlSession=MybatisUtil.currentSession();
-		ProviderMapper mapper=sqlSession.getMapper(ProviderMapper.class);
 		List<Provider> list=mapper.getProviderIdAndProName();
 		for (Provider provider : list) {
 			int id=provider.getId();
@@ -43,7 +42,6 @@ public class ProviderService {
 			pro=new Provider(id, proName);
 			jArray.add(pro);
 		}
-		sqlSession.close();
 		return jArray;
 	}
 	/**
@@ -53,10 +51,7 @@ public class ProviderService {
 	 */
 	public Provider getProviderById(int id){
 		Provider provider=null;
-		SqlSession sqlSession=MybatisUtil.currentSession();
-		ProviderMapper mapper=sqlSession.getMapper(ProviderMapper.class);
 		provider=mapper.getProviderById(id);
-		sqlSession.close();
 		return provider;
 	}
 	/**
@@ -66,10 +61,7 @@ public class ProviderService {
 	 */
 	public int updateProviderById(Provider p){
 		int row=0;
-		SqlSession sqlSession=MybatisUtil.currentSession();
-		ProviderMapper mapper=sqlSession.getMapper(ProviderMapper.class);
 		row=mapper.updateProviderById(p);
-		sqlSession.close();
 		return row;
 	}
 	/**
@@ -79,10 +71,7 @@ public class ProviderService {
 	 */
 	public int deleteProviderById(int id){
 		int row=0;
-		SqlSession sqlSession=MybatisUtil.currentSession();
-		ProviderMapper mapper=sqlSession.getMapper(ProviderMapper.class);
 		row=mapper.deleteProviderById(id);
-		sqlSession.close();
 		return row;
 	}
 	/**
@@ -92,10 +81,7 @@ public class ProviderService {
 	 */
 	public int addProvider(Provider provider){
 		int row=0;
-		SqlSession sqlSession=MybatisUtil.currentSession();
-		ProviderMapper mapper=sqlSession.getMapper(ProviderMapper.class);
 		row=mapper.addProvider(provider);
-		sqlSession.close();
 		return row;
 	}
 }

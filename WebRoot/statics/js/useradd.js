@@ -9,8 +9,8 @@ $(function(){
 	});
 	//下拉选项
 		$.ajax({
-			url:path+"/role/getrole.html",
-			type:"post",
+			url:path+"/role/view.json",
+			type:"get",
 			dataType:"json",
 			success:function(list) { //list:字符串格式的对象集合
 				$(list).each(function(index,item){ //item : java对象 有id和proName属性

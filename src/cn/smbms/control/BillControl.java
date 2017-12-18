@@ -6,6 +6,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Test;
@@ -21,7 +22,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter;
 
 import com.smbms.anntation.ReadAnnotationFromClass;
-import com.smbms.test.Test1;
 
 import cn.smbms.dao.service.BillService;
 import cn.smbms.pojo.Bill;
@@ -30,8 +30,16 @@ import cn.smbms.util.Page;
 @Controller
 @RequestMapping(value="/bill")
 public class BillControl {
-	private BillService billService=BillService.getBillService();
+	private BillService billService;
 
+
+	public BillService getBillService() {
+		return billService;
+	}
+	@Resource(name="billService")
+	public void setBillService(BillService billService) {
+		this.billService = billService;
+	}
 
 	@RequestMapping(value="/billlist.html")
 	public ModelAndView getBillList(@RequestParam(value="queryProductName",required=false,defaultValue="") String proName
@@ -57,7 +65,7 @@ public class BillControl {
 		//以上步骤确定pageOfNow是一个始终合法的页数并且满足需求，修改page对象当前页码数改为pageOfNow
 		page.setIndexPage(pageOfNow);
 		//根据新的page对象查询数据
-		billList=BillService.getBillService().getBillList(proName,proId,isPay,page);
+		billList=billService.getBillList(proName,proId,isPay,page);
 
 		//System.out.println(proName+"-"+proId+"-"+isPay+"-"+page.toString()+"*"+pageIndex+"*"+pageOfNow);
 		System.out.println(proName);

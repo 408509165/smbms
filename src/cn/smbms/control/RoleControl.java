@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -29,9 +30,19 @@ import cn.smbms.util.Page;
 @Controller
 @RequestMapping("/role")
 public class RoleControl {
-	private RoleService roleService=new RoleService();
+	private RoleService roleService;
 	
 	
+	public RoleService getRoleService() {
+		return roleService;
+	}
+
+	@Resource(name="roleService")
+	public void setRoleService(RoleService roleService) {
+		this.roleService = roleService;
+	}
+
+
 	@RequestMapping(value="/rolelist.html")
 	public ModelAndView getRoleList(
 			@RequestParam(value="pageIndex",required=false,defaultValue="0")Integer pageIndex){
@@ -40,7 +51,7 @@ public class RoleControl {
 		page.setIndexPage(0);//当前页码数
 		page.setPageSize(0);//每页显示数量
 		//查询结果（初衷是为了获取最大数据量）
-		List<Role> allList=RoleService.getRoleService().getList(page);
+		List<Role> allList=roleService.getList(page);
 		//获取最大数据量
 		int totalCount=allList.size();
 		//分页查询
@@ -54,7 +65,7 @@ public class RoleControl {
 		//以上步骤确定pageOfNow是一个始终合法的页数并且满足需求，修改page对象当前页码数改为pageOfNow
 		page.setIndexPage(pageOfNow);
 		//根据新的page对象查询数据
-		 allList=RoleService.getRoleService().getList(page);
+		 allList=roleService.getList(page);
 		
 		//System.out.println(proName+"-"+proId+"-"+isPay+"-"+page.toString()+"*"+pageIndex+"*"+pageOfNow);
 		mv.addObject("roleList", allList);
@@ -76,7 +87,7 @@ public class RoleControl {
 	 *  ,produces={"text/html;charset=utf-8","application/json;charset=utf-8"}
 	 * @return 
 	 */
-	@RequestMapping(value="/getrole.html",method=RequestMethod.GET,produces={"text/html;charset=utf-8","application/json;charset=utf-8"})
+	@RequestMapping(value="/view",method=RequestMethod.GET,produces={"text/html;charset=utf-8","application/json;charset=utf-8"})
 	@ResponseBody
 	public Object getProNameAndProId(){
 		Page page=new Page();

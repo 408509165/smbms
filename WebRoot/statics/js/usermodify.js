@@ -1,7 +1,7 @@
 $(function(){
 	//下拉选项
 	$.ajax({
-		url:path+"/role/getrole.html",
+		url:path+"/role/view.json",
 		type:"post",
 		dataType:"json",
 		success:function(list) { //list:字符串格式的对象集合

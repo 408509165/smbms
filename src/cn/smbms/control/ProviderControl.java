@@ -7,15 +7,18 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,35 +35,31 @@ import cn.smbms.util.Page;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 @Controller
 @RequestMapping(value="/provider")
 public class ProviderControl {
-	private ProviderService providerService=new ProviderService();
+	private ProviderService providerService;
+	
+	
+	public ProviderService getProviderService() {
+		return providerService;
+	}
+	@Resource(name="providerService")
+	public void setProviderService(ProviderService providerService) {
+		this.providerService = providerService;
+	}
 
 	/**
 	 * 获取供应商编号和名
 	 * @return 
 	 */
-	@RequestMapping(value="/getProNameAndProId.html",method=RequestMethod.POST)
-	public void getProNameAndProId(HttpServletResponse response,HttpServletRequest request){
-		response.setContentType("text/html;charset=utf-8");
-		try {
-			request.setCharacterEncoding("utf-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-		JSONArray jArray=ProviderService.getProviderService().getProviderIdAndProName();
-		//System.out.println(jArray.getObject(1, Provider.class));
-		PrintWriter out=null;
-		try {
-			out = response.getWriter();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		out.print(JSONArray.toJSONString(jArray));
-		out.flush();
-		out.close();//关闭输出流
+	@RequestMapping(value="/view",method=RequestMethod.GET,produces={"text/html;charset=utf-8","application/json;charset=utf-8"})
+	@ResponseBody
+	public Object getProNameAndProId(){
+		JSONArray jArray=providerService.getProviderIdAndProName();
+		return JSONObject.toJSONString(jArray);
 	}
 
 	@RequestMapping(value="/providerlist.html")
@@ -68,12 +67,13 @@ public class ProviderControl {
 			@RequestParam(value="queryProCode",required=false,defaultValue="") String proCode
 			,@RequestParam(value="queryProName",required=false,defaultValue="") String proName
 			,@RequestParam(value="pageIndex",required=false,defaultValue="0")Integer pageIndex){
+		//int a=Integer.valueOf("异常");
 		ModelAndView mv=new ModelAndView();
 		Page page=new Page();
 		page.setIndexPage(0);//当前页码数
 		page.setPageSize(0);//每页显示数量
 		//查询结果（初衷是为了获取最大数据量）
-		List<Provider> allList=ProviderService.getProviderService().getProviderList(proCode,proName,page);
+		List<Provider> allList=providerService.getProviderList(proCode,proName,page);
 		//获取最大数据量
 		int totalCount=allList.size();
 		//分页查询
@@ -87,7 +87,7 @@ public class ProviderControl {
 		//以上步骤确定pageOfNow是一个始终合法的页数并且满足需求，修改page对象当前页码数改为pageOfNow
 		page.setIndexPage(pageOfNow);
 		//根据新的page对象查询数据
-		allList=ProviderService.getProviderService().getProviderList(proCode,proName,page);
+		allList=providerService.getProviderList(proCode,proName,page);
 
 		//System.out.println(proName+"-"+proId+"-"+isPay+"-"+page.toString()+"*"+pageIndex+"*"+pageOfNow);
 		System.out.println(proName);
@@ -156,7 +156,7 @@ public class ProviderControl {
 		if(result.hasErrors()){
 			return "provider/provideradd";
 		}else{
-			//			附件处理
+			//附件处理
 			// 1 获取原文件名
 			String fileName=pic_a.getOriginalFilename();
 			// 2 确定保存文件夹
@@ -164,12 +164,22 @@ public class ProviderControl {
 			File file=new File(path, fileName);
 			// 3 将浏览器中的缓存文件保存到 目标位置
 			pic_a.transferTo(file);
-
 			int row=providerService.addProvider(provider);
 			return "redirect:/provider/providerlist.html";
 			
 		}
 	}
-
-
+	
+	/**
+	 * 异常处理
+	 * @return
+	 */
+	/*
+	@ExceptionHandler({RuntimeException.class})
+	public String execptionHandle(RuntimeException ex,HttpServletRequest request){
+		String errorMessage=ex.getMessage();
+		request.setAttribute("errorMessage", errorMessage);
+		return "error";
+	}*/
+	
 }
